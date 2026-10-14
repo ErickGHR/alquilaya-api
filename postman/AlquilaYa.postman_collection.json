@@ -1,0 +1,64 @@
+{
+  "info": {
+    "name": "AlquilaYa API",
+    "description": "Peticiones ordenadas para probar la API y tomar capturas.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "officeId", "value": "1" },
+    { "key": "customerId", "value": "1" },
+    { "key": "vehicleId", "value": "1" },
+    { "key": "rentalId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "1. Crear oficina",
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Oficina creada', () => pm.expect(pm.response.code).to.eql(201));", "if (pm.response.code === 201) pm.collectionVariables.set('officeId', pm.response.json().id);"] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"officeName\": \"Sucursal Centro\",\n  \"address\": \"Avenida Principal 120\",\n  \"city\": \"Monterrey\",\n  \"region\": \"Nuevo León\"\n}" },
+        "url": "{{baseUrl}}/api/rental-offices"
+      }
+    },
+    {
+      "name": "2. Crear cliente",
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Cliente creado', () => pm.expect(pm.response.code).to.eql(201));", "if (pm.response.code === 201) pm.collectionVariables.set('customerId', pm.response.json().id);"] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Carlos\",\n  \"lastName\": \"Ramírez\",\n  \"email\": \"carlos{{$timestamp}}@example.com\",\n  \"driversLicense\": \"LIC-{{$timestamp}}\",\n  \"phone\": \"8112345678\"\n}" },
+        "url": "{{baseUrl}}/api/customers"
+      }
+    },
+    {
+      "name": "3. Crear vehículo",
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Vehículo creado', () => pm.expect(pm.response.code).to.eql(201));", "if (pm.response.code === 201) pm.collectionVariables.set('vehicleId', pm.response.json().id);"] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"make\": \"Nissan\",\n  \"model\": \"Versa\",\n  \"year\": 2024,\n  \"licensePlate\": \"TEST-{{$timestamp}}\",\n  \"dailyRate\": 850.00,\n  \"status\": \"AVAILABLE\",\n  \"rentalOffice\": { \"id\": {{officeId}} }\n}" },
+        "url": "{{baseUrl}}/api/vehicles"
+      }
+    },
+    {
+      "name": "4. Crear alquiler",
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test('Alquiler creado', () => pm.expect(pm.response.code).to.eql(201));", "if (pm.response.code === 201) pm.collectionVariables.set('rentalId', pm.response.json().id);"] } }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"vehicle\": { \"id\": {{vehicleId}} },\n  \"customer\": { \"id\": {{customerId}} },\n  \"rentalDate\": \"2026-10-20\",\n  \"returnDate\": \"2026-10-23\",\n  \"status\": \"ACTIVE\"\n}" },
+        "url": "{{baseUrl}}/api/rentals"
+      }
+    },
+    {
+      "name": "5. Consultar alquileres",
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/rentals" }
+    },
+    {
+      "name": "6. Consultar vehículos",
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/api/vehicles" }
+    }
+  ]
+}
